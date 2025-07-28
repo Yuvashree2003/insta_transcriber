@@ -1,31 +1,24 @@
-from flask import Flask, request, Response, render_template
+from flask import Flask, request, render_template, jsonify
+import os
 
 app = Flask(__name__)
 
-# 🔐 Step 1: Define username and password
-USERNAME = 'Valli'
-PASSWORD = 'Yuvashree@2003'
+@app.route("/", methods=["GET", "POST"])
+def index():
+    if request.method == "POST":
+        # Example: handling a form or JSON data
+        data = request.form.get("message") or request.json.get("message")
+        print("Received:", data)
+        return jsonify({"response": f"You said: {data}"})
+    
+    # For GET request, return a simple HTML form or message
+    return '''
+        <form method="POST">
+            <input name="message" placeholder="Type a message">
+            <input type="submit" value="Send">
+        </form>
+    '''
 
-# 🔐 Step 2: Authentication functions
-def check_auth(username, password):
-    return username == USERNAME and password == PASSWORD
-
-def authenticate():
-    return Response(
-        'Could not verify your access. Login required.', 401,
-        {'WWW-Authenticate': 'Basic realm="Login Required"'})
-
-# 🔐 Step 3: Protect all routes
-@app.before_request
-def require_auth():
-    auth = request.authorization
-    if not auth or not check_auth(auth.username, auth.password):
-        return authenticate()
-
-# 🏠 Example route (replace with your own)
-@app.route('/')
-def home():
-    return render_template('index.html')
-
-if __name__ == '__main__':
-    app.run(debug=True)
+if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 5000))
+    app.run(debug=True, host="0.0.0.0", port=port)
