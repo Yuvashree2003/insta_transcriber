@@ -1,5 +1,2 @@
 Flask
-yt-dlp
-moviepy
-openai-whisper
-torch
+gunicorn
