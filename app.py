@@ -1,24 +1,35 @@
-from flask import Flask, request, render_template, jsonify
-import os
+from flask import Flask, request, render_template_string
 
 app = Flask(__name__)
 
-@app.route("/", methods=["GET", "POST"])
-def index():
-    if request.method == "POST":
-        # Example: handling a form or JSON data
-        data = request.form.get("message") or request.json.get("message")
-        print("Received:", data)
-        return jsonify({"response": f"You said: {data}"})
-    
-    # For GET request, return a simple HTML form or message
-    return '''
-        <form method="POST">
-            <input name="message" placeholder="Type a message">
-            <input type="submit" value="Send">
-        </form>
-    '''
+HTML_PAGE = '''
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Instagram Link Extractor</title>
+</head>
+<body>
+    <h2>Paste your Instagram Reel URL</h2>
+    <form method="POST">
+        <input name="url" type="text" style="width: 400px;" placeholder="https://www.instagram.com/reel/..." required>
+        <button type="submit">Submit</button>
+    </form>
 
-if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 5000))
-    app.run(debug=True, host="0.0.0.0", port=port)
+    {% if result %}
+        <h3>Response:</h3>
+        <p>{{ result }}</p>
+    {% endif %}
+</body>
+</html>
+'''
+
+@app.route('/', methods=['GET', 'POST'])
+def index():
+    result = None
+    if request.method == 'POST':
+        url = request.form['url']
+        result = f'You said: {url}'
+    return render_template_string(HTML_PAGE, result=result)
+
+if __name__ == '__main__':
+    app.run(debug=True)
