@@ -1,2 +1,6 @@
-Flask
+Flask==2.3.3
 gunicorn
+requests
+instaloader
+pytube
+beautifulsoup4
